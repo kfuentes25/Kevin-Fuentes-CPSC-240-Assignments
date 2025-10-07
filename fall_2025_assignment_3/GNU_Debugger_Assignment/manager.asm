@@ -69,6 +69,7 @@ name resb 64
 occupation resb 64
 
 segment .text
+
 manager:
 backup
 ; This block outputs prompt_name message
@@ -105,6 +106,13 @@ mov rsi, 63
 mov rdx, [stdin]
 call fgets
 ; end block
+
+;removes the new line character
+mov rax, 0
+mov rdi, occupation
+call strlen
+mov [occupation+rax-1], byte 0
+;end block
 
 ;this block outputs output_occupation message
 mov rax, 0

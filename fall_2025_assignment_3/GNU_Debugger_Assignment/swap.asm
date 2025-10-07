@@ -36,6 +36,20 @@ segment .bss
 segment .text
 
 swap_function:
+
+; store vallue of two paraemters
+movsd xmm15, [rdi]
+movsd xmm14, [rsi]
+;end block
+
+; swap the values in the two registers
+movsd xmm13, xmm15
+movsd xmm15, xmm14
+movsd xmm14, xmm13
+;end block
+
+ret
+
 backup
 
 

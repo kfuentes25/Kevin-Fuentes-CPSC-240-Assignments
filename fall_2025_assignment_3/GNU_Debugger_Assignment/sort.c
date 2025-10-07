@@ -32,11 +32,13 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-void swap(double* xp, double* yp){
-    double temp = *xp;
-    *xp = *yp;
-    *yp = temp;
-}
+extern void swap_function(double* val1, double* val2);
+
+// void swap(double* xp, double* yp){
+//     double temp = *xp;
+//     *xp = *yp;
+//     *yp = temp;
+// }
 
 void sort(double arr[], int n){
     int i, j;
@@ -45,7 +47,7 @@ void sort(double arr[], int n){
         swapped = false;
         for (j = 0; j < n - i - 1; j++) {
             if (arr[j] > arr[j + 1]) {
-                swap(&arr[j], &arr[j + 1]);
+                swap_function(&arr[j], &arr[j + 1]);
                 swapped = true;
             }
         }
