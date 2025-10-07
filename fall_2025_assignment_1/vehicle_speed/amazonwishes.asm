@@ -133,7 +133,6 @@ mov rsi, rsp
 call scanf
 
 ; COPIES THE NEW NUMBER FROM TOP OF THE STACK TO XMM REGISTER
-
 movsd xmm12, [rsp]
 pop rax
 pop rax
@@ -223,27 +222,23 @@ pop rax
 ; GET THE DIVISION NUMBER INTO THE CORRECT FORM AND IN A FLOAT REGISTER
 movsd xmm9, [divide]
 
-; ADD ALL MILES DRIVEN FLOATS AND GET THE AVERAGE
+; ADD ALL MILES DRIVEN FLOATS AND GET THE TOTAL (distance)
 addsd xmm15, xmm14
 addsd xmm15, xmm13
-divsd xmm15, xmm9
 
-; ADD AVERAGE SPEED FLOATS AND GET THE AVERAGE 
+; ADD AVERAGE SPEED FLOATS AND GET THE AVERAGE (speed)
 addsd xmm12, xmm11
 addsd xmm12, xmm10
 divsd xmm12, xmm9
 
 ; DIVIDE AVERAGE SPEED BY MILES DRIVEN TO GET TOTAL TIME DRIVEN
-divsd xmm12, xmm15
+divsd xmm15, xmm12
 
 ; OUTPUT TOTAL DRIVING TIME
 mov rax, 1
 mov rdi, total_time
-movsd xmm0, xmm12
+movsd xmm0, xmm15
 call printf
-
-; MULTIPLY XMM12 BY XMM15 TO GET IT BACK TO THE AVERAGE SPEED VALUE
-mulsd xmm12, xmm15
 
 ; OUTPUT AVERAGE SPEED
 mov rax, 1
