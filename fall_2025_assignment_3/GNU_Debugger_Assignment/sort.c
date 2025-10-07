@@ -29,6 +29,10 @@
 // Execution:
 // ./go.out
 
+// Credit for the "sort(double arr[], int n)" function goes to the creators at this URL:
+// https://www.geeksforgeeks.org/dsa/bubble-sort-algorithm/
+
+
 #include <stdbool.h>
 #include <stdio.h>
 
