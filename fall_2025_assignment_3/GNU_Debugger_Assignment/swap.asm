@@ -48,6 +48,10 @@ movsd xmm15, xmm14
 movsd xmm14, xmm13
 ;end block
 
+; return the swapped values to their original locations
+movsd [rdi], xmm15
+movsd [rsi], xmm14
+;end block 
 ret
 
 backup
