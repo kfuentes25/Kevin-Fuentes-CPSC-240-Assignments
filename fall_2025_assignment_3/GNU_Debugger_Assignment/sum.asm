@@ -1,0 +1,68 @@
+;*****************************************************************************************************************************
+; Program Name: "sum.asm". This program demonstrates how to sum the contents of an array of float numbers.  Copyright (C) 2025  Kevin Fuentes
+; This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License  
+; version 3 as published by the Free Software Foundation.                                                                    
+; This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied         
+; warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.      
+; A copy of the GNU General Public License v3 is available here: <https://www.gnu.org/licenses/>.
+;*****************************************************************************************************************************
+;
+; Author Information:
+; Name: Kevin Fuentes
+; CWID: 885809459
+; Section: CPSC 240-13
+; Email: kevinfuentes0015@csu.fullerton.edu
+;
+; Program Information:
+; Name: sum.asm
+; Languages: X86, C, bash
+; Start Date: 10-2-2024
+; Completion Date:  10-12-2024
+;
+; Program's Purpose: to sum the contents of an array of float numbers
+;
+; Translator Information:
+; Linux: Ubuntu
+;
+;===== Begin code area =======================================================================================================================
+global sum_function
+
+%include "data.inc"
+
+segment .data
+segment .bss
+segment .text
+
+sum_function:
+backup
+;receive the array, its size, and create an increment counter
+mov r15, rdi
+mov r14, rsi
+mov r13, 0
+;end block
+
+; zero out xmm15
+xorpd xmm15, xmm15
+;end block
+
+sum_loop:
+;check if the loop counter is at the end of the array
+cmp r13, r14
+jge exit
+;end block
+
+; Block to sum the contents of the array
+movsd xmm14, [r15+r13*8]
+addsd xmm15, xmm14
+inc r13
+jmp sum_loop
+;end block
+
+exit:
+;mov value from xmm14 t0 xmm0 to return to driver
+movsd xmm0, xmm15
+;end block
+restore
+
+; Return
+ret
