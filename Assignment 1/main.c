@@ -24,8 +24,8 @@ Program Name: "Amazon Wishes". This program demonstrates how to input and output
 
 // Project Information:
 // Files: main.cpp, amazonwishes.asm, delivery_script.sh
-// Developing Computer: 
-// Status: In progress
+// Developing Computer: Dell Latitude
+// Status: Complete
 
 // Translator Information:
 //      GNU Compiler: gcc -c -m64 -Wall -fno-pie -no-pie -o main.o main.c

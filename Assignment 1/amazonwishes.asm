@@ -26,16 +26,11 @@
 ;
 ; Project Information:
 ; Files: main.cpp, amazonwishes.asm, delivery_script.sh
-; Developing Computer: 
-; Status: In progress
+; Developing Computer: Dell Latitude
+; Status: Complete
 ;
 ; Translator Information:
 ; Linux: nasm -f elf64 -o amazonwishes.o amazonwishes.asm
-;
-;Format information
-;  Page width: 172 columns
-;  Begin comments: 40
-;
 ;===== Begin code area =======================================================================================================================
 
 extern printf
@@ -257,11 +252,10 @@ call printf
 ; end block
 
 
-; GIVE THE AVERAGE TIME TO THE DRIVER TO KEEP FOR FUTURE USE.
+; GIVE THE AVERAGE SPEED TO THE DRIVER
 movsd xmm0, xmm12
 ; end block
 
 restore
-
 ; Return
 ret
