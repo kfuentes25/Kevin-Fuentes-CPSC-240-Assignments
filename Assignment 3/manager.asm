@@ -1,6 +1,6 @@
 ;*****************************************************************************************************************************
-; ; Program Name: "manager.asm". This program demonstrates how to manage all functions of this program and is one of the main drives along with the C file.  Copyright (C) 2025  Kevin Fuentes
-
+; ; Program Name: "manager.asm". This program demonstrates how to manage all functions of this program and is one of the main 
+;                               drives along with the C file.  Copyright (C) 2025  Kevin Fuentes
 ; This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License  
 ; version 3 as published by the Free Software Foundation.                                                                    
 ; This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied         
@@ -50,7 +50,7 @@ prompt_occupation db "Please enter your future occupation: ", 0
 output_occupation db "Thank you. We like %s.", 0
 prompt_float_nums db "Please enter float numbers separated by ws. Press enter followed by cont-d to terminate.", 10, 0
 prompt_nums_entered db "Thank you. You entered these numbers: ", 10, 0
-prompt_sum db "The sum of this array is %lf", 10, 0
+prompt_sum db "The sum of this array is %.3lf", 10, 0
 prompt_sorting_array db "The array will now be sorted.", 10, 0
 prompt_sorted db "These are the current values in the array: ", 10, 0
 prompt_program_will_terminate db "This program will terminate.", 10, 0
