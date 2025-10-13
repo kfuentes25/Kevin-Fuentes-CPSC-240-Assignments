@@ -36,7 +36,7 @@ segment .bss
 segment .text
 
 swap_function:
-
+backup
 ; store vallue of two paraemters
 movsd xmm15, [rdi]
 movsd xmm14, [rsi]
@@ -52,53 +52,6 @@ movsd xmm14, xmm13
 movsd [rdi], xmm15
 movsd [rsi], xmm14
 ;end block 
-ret
-
-backup
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 restore
 ;Return
