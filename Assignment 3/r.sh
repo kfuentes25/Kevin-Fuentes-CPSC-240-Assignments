@@ -36,4 +36,5 @@ gcc -m64 -Wall -fno-pie -no-pie -o go.out executive.o outputarray.o manager.o in
 
 echo "Next the program ""GDB Learning Place"" will run"
 ./go.out
+rm *.o
 echo "This bash file will now terminate."

@@ -36,4 +36,5 @@ gcc -m64 -Wall -fno-pie -no-pie -o go.out main.o display_array.o manager.o input
 
 echo "Next the program ""Arrays"" will run"
 ./go.out
+rm *.o
 echo "This bash file will now terminate."

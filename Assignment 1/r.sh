@@ -18,4 +18,5 @@ gcc -m64 -Wall -fno-pie -no-pie -o go.out main.o amazonwishes.o
 
 echo "Next the program ""Amazon Wishes"" will run"
 ./go.out
+rm *.o
 echo "This bash file will now terminate."
