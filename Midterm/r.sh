@@ -29,4 +29,5 @@ echo "Link the all 'O' files"
 gcc -m64 -Wall -fno-pie -no-pie -o go.out supervisor.o main.o outputarray.o input_array.o isfloat.o shift.o 
 
 ./go.out
+rm *.o
 echo "This bash file will now terminate."
