@@ -29,12 +29,26 @@
 
 
 global _start
-; extern input_array
-; extern outputarray
+extern input_array
+extern outputarray
 
 %include "data.inc"
 
 segment .data
+    LF equ 10 ; line feed
+    NULL equ 0 ; end of string
+    TRUE equ 1
+    FALSE equ 0
+    EXIT_SUCCESS equ 0 ; success code
+    STDIN equ 0 ; standard input
+    STDOUT equ 1 ; standard output
+    SYS_read equ 0 ; read
+    SYS_write equ 1 ; write
+    SYS_exit equ 60 ; terminate
+
+
+
+
 welcome_msg db "Welcome.   Please enter your name: ", 0
 input_nums_msg db 10, "Please enter some float numbers each one separated by a press of the enter key..  Terminate the inputs by entering crtl+D", 10, 0
 thank_you_msg db 10, "Thank you.  You entered", 10, 0
@@ -100,36 +114,17 @@ _next:
     syscall
 ;endblock
 
-;Input Array starts
-    mov r15, myarr
-    mov r14, 63
-    mov r13, 0
-    jmp begin_input_loop
+; ;call input array
+;     mov rdi, myarr
+;     mov rsi, 63
+;     call input_array
+; ;end block
 
-    begin_input_loop:
-    ;getchar
-        mov rax, 0
-        mov rdi, 0
-        mov rsi, chr
-        mov rdx, 1
-        syscall
-    ;end block
+;call output array
 
-    ; move through the word
-        mov byte [rbx], al
-        inc rbx
-        jmp begin_input_loop
-    ;end block
+;endblock
 
-    ;check if the character just read is a newline
-        cdqe
-        cmp rax, 0
-        je third
-    ;endblock
 
-;End input Array
-
-third:
 ; Block to to output the string thank_you_msg
     mov rax, 1
     mov rdi, 1
