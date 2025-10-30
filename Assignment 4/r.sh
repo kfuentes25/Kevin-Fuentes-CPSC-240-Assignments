@@ -25,12 +25,15 @@ nasm -f elf64 -o isfloat.o isfloat.asm
 echo "Assemble the X86 file getline.asm"
 nasm -f elf64 -o getline.o getline.asm
 
-
 echo "Assemble the X86 file atof.asm"
 nasm -f elf64 -o atof.o atof.asm
 
+
+echo "Assemble the X86 file printString.asm"
+nasm -f elf64 -o printString.o printString.asm
+
 echo "Link the all 'O' files"
-ld -o go.out adder.o arithmetic.o input_array.o output_array.o isfloat.o getline.o atof.o
+ld -o go.out adder.o arithmetic.o input_array.o output_array.o isfloat.o getline.o atof.o printString.o 
 
 echo "Next the program ""Sum of Values in an Array"" will run"
 ./go.out

@@ -26,3 +26,44 @@
 ; Linux: Ubuntu
 ;
 ;===== Begin code area =======================================================================================================================
+global adder
+
+%include "data.inc"
+
+segment .data
+segment .bss
+segment .text
+
+adder:
+backup
+;receive the array, its size, and create an increment counter
+mov r15, rdi
+mov r14, rsi
+mov r13, 0
+;end block
+
+; zero out xmm15
+xorpd xmm15, xmm15
+;end block
+
+sum_loop:
+;check if the loop counter is at the end of the array
+cmp r13, r14
+jge exit
+;end block
+
+; Block to sum the contents of the array
+movsd xmm14, [r15+r13*8]
+addsd xmm15, xmm14
+inc r13
+jmp sum_loop
+;end block
+
+exit:
+;mov value from xmm14 t0 xmm0 to return to driver
+movsd xmm0, xmm15
+;end block
+restore
+
+; Return
+ret

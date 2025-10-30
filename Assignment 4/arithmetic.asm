@@ -31,6 +31,8 @@
 global _start
 extern input_array
 extern outputarray
+extern getline
+extern printString
 
 %include "data.inc"
 
@@ -46,13 +48,12 @@ segment .data
     SYS_write equ 1 ; write
     SYS_exit equ 60 ; terminate
 
-
-
-
 welcome_msg db "Welcome.   Please enter your name: ", 0
 input_nums_msg db 10, "Please enter some float numbers each one separated by a press of the enter key..  Terminate the inputs by entering crtl+D", 10, 0
 thank_you_msg db 10, "Thank you.  You entered", 10, 0
-
+the_sum_is db 10, "The sum is: ", 0
+have_a_nice_day db 10, "Have a nice day, ", 0
+newLine db LF, 0
 
 segment .bss
 name resb 50+2
@@ -67,74 +68,58 @@ _start:
 backup
 
 ; Block to to output the string welcome_msg
-    mov rax, 1
-    mov rdi, 1
-    mov rsi, welcome_msg
-    mov rdx, 36
-    syscall
+mov rdi, welcome_msg
+call printString
 ;endblock
 
-; Recieve input
-    mov rbx, name
-    mov r12, 0
-    read:
-    ;getchar
-        mov rax, 0
-        mov rdi, 0
-        mov rsi, chr
-        mov rdx, 1
-        syscall
-    ;end block
+;recieve input for the name
+mov rdi, name
+call getline
+;end block
 
-    ;check if the character just read is a newline
-        mov al, [chr]
-        cmp al, 10
-        je _next
-    ;endblock
+mov rdi, name
+call printString
 
-    ; check if the input goes beyond the reserved amount
-        inc r12
-        cmp r12, 50
-        jae read
-    ;end block
-
-    ; move through the word
-        mov byte [rbx], al
-        inc rbx
-        jmp read
-    ;end block
-;end recieve input
-
-_next:
 ; Block to to output the string input_nums_msg
-    mov rax, 1
-    mov rdi, 1
-    mov rsi, input_nums_msg
-    mov rdx, 123
-    syscall
+mov rdi, input_nums_msg
+call printString
 ;endblock
 
-; ;call input array
+; ; call input array
 ;     mov rdi, myarr
 ;     mov rsi, 63
 ;     call input_array
-; ;end block
+; ; end block
+
+
+; Block to to output the string thank_you_msg
+mov rax, 1
+mov rdi, 1
+mov rsi, thank_you_msg
+mov rdx, 27
+syscall
+;endblock
+
 
 ;call output array
 
 ;endblock
 
 
-; Block to to output the string thank_you_msg
-    mov rax, 1
-    mov rdi, 1
-    mov rsi, thank_you_msg
-    mov rdx, 28
-    syscall
-;endblock
 
-done:
-;return call
+; print out end msg
+mov rdi, have_a_nice_day
+call printString
+;end block
+
+;output name
+mov rax, 1
+mov rdi, 1
+mov rsi, name
+mov rdx, 50+2
+syscall
+
+;terminate
 mov rax, 60
 mov rdi, 0
 syscall
