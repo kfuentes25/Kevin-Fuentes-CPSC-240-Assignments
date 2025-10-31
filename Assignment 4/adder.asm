@@ -27,6 +27,7 @@
 ;
 ;===== Begin code area =======================================================================================================================
 global adder
+extern ftoa
 
 %include "data.inc"
 
@@ -62,6 +63,7 @@ jmp sum_loop
 exit:
 ;mov value from xmm14 t0 xmm0 to return to driver
 movsd xmm0, xmm15
+call ftoa
 ;end block
 restore
 

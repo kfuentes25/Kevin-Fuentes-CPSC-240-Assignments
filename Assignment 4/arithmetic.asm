@@ -30,7 +30,7 @@
 
 global _start
 extern input_array
-extern outputarray
+extern output_array
 extern getline
 extern printString
 
@@ -49,8 +49,8 @@ SYS_write equ 1 ; write
 SYS_exit equ 60 ; terminate
 
 welcome_msg db "Welcome.   Please enter your name: ", 0
-input_nums_msg db 10, "Please enter some float numbers each one separated by a press of the enter key..  Terminate the inputs by entering crtl+D", 10, 0
-thank_you_msg db 10, "Thank you.  You entered", 10, 0
+input_nums_msg db 10, "Please enter some float numbers each one separated by a press of the enter key..  Terminate the inputs by entering a newline", 10, 0
+thank_you_msg db "Thank you.  You entered", 10, 0
 the_sum_is db 10, "The sum is: ", 0
 have_a_nice_day db 10, "Have a nice day, ", 0
 newLine db LF, 0
@@ -77,6 +77,8 @@ mov rdi, name
 call getline
 ;end block
 
+mov r8, [name]
+
 ; Block to to output the string input_nums_msg
 mov rdi, input_nums_msg
 call printString
@@ -88,15 +90,17 @@ mov rsi, 63
 call input_array
 ; end block
 
+mov [arrlength], rax
 
 ; Block to to output the string thank_you_msg
 mov rdi, thank_you_msg
 call printString
 ;endblock
 
-
 ;call output array
-
+    mov rdi, myarr
+    mov rsi, [arrlength]
+    call output_array
 ;endblock
 
 ; print out end msg
@@ -106,6 +110,11 @@ call printString
 
 ;output name
 mov rdi, name
+call printString
+;end block
+
+;print new line "\n"
+mov rdi, newLine
 call printString
 ;end block
 

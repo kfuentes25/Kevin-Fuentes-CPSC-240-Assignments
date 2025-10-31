@@ -72,6 +72,8 @@ inputloop:
     mov al, byte [stringnum]
     cmp al, LF
     je done
+    cmp al, 0
+    je done
 ;end block
 
 ;Validate input

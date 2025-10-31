@@ -26,12 +26,12 @@
 
 global output_array
 extern printString
+extern ftoa
 
 %include "data.inc"
 
 segment .data
-output_format: db "%lf", 10, 0
-
+linefeed db 10, 0
 segment .bss
 
 segment .text
@@ -42,7 +42,7 @@ backup
 ;receive the array, its size, and create an increment counter
 mov r15, rdi
 mov r14, rsi
-mov r13, 0
+xor r13, r13
 ;end block
 
 begin_loop:
@@ -50,12 +50,32 @@ begin_loop:
 cmp r13, r14
 jge exit
 ;end block
+; Save our registers before calling functions that reuse them for different things
+push r15
+push r14
+push r13
+;end block
+
 
 ; Outputs 1 floating-point number
-mov rax, 1
-mov rdi, output_format
-movsd xmm0, [r15+r13*8]
+movsd xmm0, [r15+8*r13]
+call ftoa
+;end block
+
+; block start
+mov rdi, rax
 call printString
+;end block
+
+;print a newline
+mov rdi, linefeed
+call printString
+;end block
+
+; Restore our registers with the saved values!
+pop r13
+pop r14
+pop r15
 ;end block
 
 ; increments the counter
@@ -64,7 +84,8 @@ jmp begin_loop
 ;end block
 
 exit:
-mov r13, rax
 restore
+mov rax, r13
+
 ;Return
 ret
