@@ -29,58 +29,56 @@ global printString
 %include "data.inc"
 
 segment .data
-    LF equ 10 ; line feed
-    NULL equ 0 ; end of string
-    TRUE equ 1
-    FALSE equ 0
-    EXIT_SUCCESS equ 0 ; success code
-    STDIN equ 0 ; standard input
-    STDOUT equ 1 ; standard output
-    STDERR equ 2 ; standard error
-    SYS_read equ 0 ; read
-    SYS_write equ 1 ; write
-    SYS_open equ 2 ; file open
-    SYS_close equ 3 ; file close
-    SYS_fork equ 57 ; fork
-    SYS_exit equ 60 ; terminate
-    SYS_creat equ 85 ; file open/create
-    SYS_time equ 201 ; get time
+LF equ 10 ; line feed
+NULL equ 0 ; end of string
+TRUE equ 1
+FALSE equ 0
+EXIT_SUCCESS equ 0 ; success code
+STDIN equ 0 ; standard input
+STDOUT equ 1 ; standard output
+STDERR equ 2 ; standard error
+SYS_read equ 0 ; read
+SYS_write equ 1 ; write
+SYS_open equ 2 ; file open
+SYS_close equ 3 ; file close
+SYS_fork equ 57 ; fork
+SYS_exit equ 60 ; terminate
+SYS_creat equ 85 ; file open/create
+SYS_time equ 201 ; get time
 
-    ;  Define some strings.
-    STRLEN equ 50
-    newLine db LF, NULL
+;  Define some strings.
+STRLEN equ 50
+newLine db LF, NULL
 segment .bss
 segment .text
+
 printString:
-    push rbx
+backup
+;move thing to output to rbx and rdx is character counter
+mov rbx, rdi
+mov rdx, 0
+;end block
 
-    ;recieve the string
-        mov rbx, rdi
-        mov rdx, 0
-    ;end block
+strCountLoop:
 
-    strCountLoop:
-    ;read string char by char
-        cmp byte [rbx], NULL
-        je strCountDone
-        inc rdx
-        inc rbx
-        jmp strCountLoop
-    ;end block
+cmp byte [rbx], 0
+je strCountDone
 
-    strCountDone:
-    ;check if the string count is done
-        cmp rdx, 0
-        je prtDone
-    ;end block
+inc rdx
+inc rbx
+jmp strCountLoop
+strCountDone:
+; check if empty str
+cmp rdx, 0
+je prtDone
+;end block
 
-    ; Call OS to output string.
-        mov rax, SYS_write
-        mov rsi, rdi
-        mov rdi, STDOUT
-        syscall
-    ;end block
+;  Call OS to output string.
+mov rax, SYS_write ; system code for write()
+mov rsi, rdi ; address of chars to write
+mov rdi, STDOUT ; standard out ; RDX=count to write, set above
+syscall
 
-    prtDone:
-    pop rbx
-    ret
+prtDone:
+restore
+ret

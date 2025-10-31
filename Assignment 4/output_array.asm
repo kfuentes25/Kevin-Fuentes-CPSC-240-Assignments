@@ -25,5 +25,46 @@
 
 
 global output_array
+extern printString
 
 %include "data.inc"
+
+segment .data
+output_format: db "%lf", 10, 0
+
+segment .bss
+
+segment .text
+
+output_array:
+backup
+
+;receive the array, its size, and create an increment counter
+mov r15, rdi
+mov r14, rsi
+mov r13, 0
+;end block
+
+begin_loop:
+; compare the increment counter and array size to see if were done
+cmp r13, r14
+jge exit
+;end block
+
+; Outputs 1 floating-point number
+mov rax, 1
+mov rdi, output_format
+movsd xmm0, [r15+r13*8]
+call printString
+;end block
+
+; increments the counter
+inc r13
+jmp begin_loop
+;end block
+
+exit:
+mov r13, rax
+restore
+;Return
+ret

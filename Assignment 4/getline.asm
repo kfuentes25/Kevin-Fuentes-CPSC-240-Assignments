@@ -22,6 +22,13 @@
 ; Linux: Ubuntu
 ;
 ;===== Begin code area =======================================================================================================================
+
+global getline
+extern printString
+
+%include "data.inc"
+
+
 section .data
     LF equ 10 ; line feed
     NULL equ 0 ; end of string
@@ -49,14 +56,15 @@ inLine resb STRLEN+2
 
 
 section .text
-global getline
 getline:
-    ; Read characters from user (one at a time)
-    mov rbx, inLine ; inLine addr
-    mov r12, 0 ; char count
-    ;end block
+backup
 
-    readCharacters:
+; Read characters from user (one at a time)
+mov rbx, rdi ; rdi addr
+mov r12, 0 ; char count
+;end block
+
+readCharacters:
     mov rax, SYS_read ; system code for read
     mov rdi, STDIN ; standard in
     lea rsi, byte [chr] ; address of chr
@@ -75,9 +83,11 @@ getline:
     jae readCharacters
     ;end block
 
-    mov byte [rbx], al ; inLine[i] = chr
+    mov byte [rbx], al ; rdi[i] = chr
     inc rbx ; update tmpStr addr
     jmp readCharacters
 readDone:
     mov byte [rbx], NULL ; add NULL termination
+    mov rax, rbx
+restore
 ret

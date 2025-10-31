@@ -37,16 +37,16 @@ extern printString
 %include "data.inc"
 
 segment .data
-    LF equ 10 ; line feed
-    NULL equ 0 ; end of string
-    TRUE equ 1
-    FALSE equ 0
-    EXIT_SUCCESS equ 0 ; success code
-    STDIN equ 0 ; standard input
-    STDOUT equ 1 ; standard output
-    SYS_read equ 0 ; read
-    SYS_write equ 1 ; write
-    SYS_exit equ 60 ; terminate
+LF equ 10 ; line feed
+NULL equ 0 ; end of string
+TRUE equ 1
+FALSE equ 0
+EXIT_SUCCESS equ 0 ; success code
+STDIN equ 0 ; standard input
+STDOUT equ 1 ; standard output
+SYS_read equ 0 ; read
+SYS_write equ 1 ; write
+SYS_exit equ 60 ; terminate
 
 welcome_msg db "Welcome.   Please enter your name: ", 0
 input_nums_msg db 10, "Please enter some float numbers each one separated by a press of the enter key..  Terminate the inputs by entering crtl+D", 10, 0
@@ -56,8 +56,8 @@ have_a_nice_day db 10, "Have a nice day, ", 0
 newLine db LF, 0
 
 segment .bss
-name resb 50+2
 chr resb 1
+name resb 50+2
 myarr resq 64
 arrlength resb 1
 
@@ -77,27 +77,21 @@ mov rdi, name
 call getline
 ;end block
 
-mov rdi, name
-call printString
-
 ; Block to to output the string input_nums_msg
 mov rdi, input_nums_msg
 call printString
 ;endblock
 
-; ; call input array
-;     mov rdi, myarr
-;     mov rsi, 63
-;     call input_array
-; ; end block
+; call input array
+mov rdi, myarr
+mov rsi, 63
+call input_array
+; end block
 
 
 ; Block to to output the string thank_you_msg
-mov rax, 1
-mov rdi, 1
-mov rsi, thank_you_msg
-mov rdx, 27
-syscall
+mov rdi, thank_you_msg
+call printString
 ;endblock
 
 
@@ -105,19 +99,20 @@ syscall
 
 ;endblock
 
-
-
 ; print out end msg
 mov rdi, have_a_nice_day
 call printString
 ;end block
 
 ;output name
-mov rax, 1
-mov rdi, 1
-mov rsi, name
-mov rdx, 50+2
-syscall
+mov rdi, name
+call printString
+;end block
+
+;print new line "\n"
+mov rdi, newLine
+call printString
+;end block
 
 ;terminate
 mov rax, 60

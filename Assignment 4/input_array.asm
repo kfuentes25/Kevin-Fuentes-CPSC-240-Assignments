@@ -27,51 +27,80 @@
 global input_array
 extern getline
 extern stringtof
+extern isfloat
+extern printString
+
 %include "data.inc"
 
 segment .data
+LF equ 10 ; line feed
+not_a_float db "The last input was invalid and not entered into the array", 10, 0
+
 segment .bss
-stringnum resq 100
+stringnum resb 64
+chr resb 1
 segment .text
 input_array:
 
+backup
+;receive the array, its size, create an increment counter, and jump to the start of the loop
+    mov r15, rdi
+    mov r14, rsi
+    xor r13, r13
+    jmp inputloop
+;end block
 
-
-;Input Array starts
-mov r15, rdi
-mov r14, rsi
-xor r13, r13
+;block outputs that input is not floating point string and sends user back to top of the loop
+try_again:
+    mov rdi, not_a_float
+    call printString
+    jmp inputloop
+;end block
 
 inputloop:
-;check for ctrl+D
-cdqe
-cmp rax, 0
-je done
-; end block
-
 ;check if capacity has been reached
     cmp r13, r14
     jge done
-    jmp inputloop
 ;endblock
 
 ;block inputs 1 num as a string
     mov rdi, stringnum
-    mov rsi, 40
     call getline
 ;endblock
 
-;block that converts stringnum to xmm0
+;check if input is just a newline
+    mov al, byte [stringnum]
+    cmp al, LF
+    je done
+;end block
+
+;Validate input
+    mov rdi, stringnum
+    call isfloat
+;end block
+
+;jump back to send error message and restart loop
+    cmp rax, 0
+    je try_again
+;end block
+
+;block that converts r9 to xmm0
     mov rdi, stringnum
     call stringtof
+    movsd xmm15, xmm0
 ;endblock
 
 ;add to array r15 at position r13
-    movsd [r15+8*r13], xmm0
+    movsd [r15+r13*8], xmm15
     inc r13
     jmp inputloop
 ;endblock
-done:
-mov rax, r13
 
-;End input Array
+
+
+;done function to leave input array and return count to arithmetic
+done:
+    mov rax, r13
+;end block
+restore
+ret
