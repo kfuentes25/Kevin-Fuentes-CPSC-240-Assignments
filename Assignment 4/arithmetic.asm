@@ -17,7 +17,7 @@
 ; Program Information:
 ; Name: arithmetic.asm
 ; Languages: X86, bash
-; Start Date: 10-23-2024
+; Start Date: 10-23-2025
 ; Completion Date: 
 ;
 ; Program's Purpose: to receive inputs for the contents of an array of float numbers
@@ -35,6 +35,7 @@ extern getline
 extern printString
 extern adder
 extern ftoa
+extern stringtof
 
 %include "data.inc"
 
@@ -51,7 +52,7 @@ SYS_write equ 1 ; write
 SYS_exit equ 60 ; terminate
 
 welcome_msg db "Welcome.   Please enter your name: ", 0
-input_nums_msg db 10, "Please enter some float numbers each one separated by a press of the enter key..  Terminate the inputs by entering a newline", 10, 0
+input_nums_msg db 10, "Please enter some float numbers each one separated by a press of the enter key..  Terminate the inputs by entering a newline a.k.a <enter>..", 10, 0
 thank_you_msg db "Thank you.  You entered", 10, 0
 the_sum_is db 10, "The sum is: ", 0
 have_a_nice_day db 10, "Have a nice day, ", 0
@@ -107,31 +108,30 @@ call output_array
 ;endblock
 
 ; call the adder function to use the float values
-    mov rdi, myarr
-    mov rsi, [arrlength]
-    call adder
+mov rdi, myarr
+mov rsi, [arrlength]
+call adder
 ;end block
 
-;store the sum in "sum_string"
-xor r15, r15
-mov [sum_string], rax
+;convert the sum into a string and store it in rbx
+call ftoa
+mov rbx, rax
 ;end block
-
 
 ;output the sum is message
-    mov rdi, the_sum_is
-    call printString
-    ;end block
+mov rdi, the_sum_is
+call printString
+;end block
 
-    ;output the sum_string
-    mov rdi, sum_string
-    call printString
-    ;end block
+;output the sum_string
+mov rdi, rbx
+call printString
+;end block
 
-    ;print new line "\n"
-    mov rdi, newLine
-    call printString
-    ;end block
+;print new line "\n"
+mov rdi, newLine
+call printString
+;end block
 ;end block
 
 ; print out end msg
@@ -140,25 +140,18 @@ call printString
 ;end block
 
 ;output name
-    mov rdi, name
-    call printString
-    ;end block
-
-    ;print new line "\n"
-    mov rdi, newLine
-    call printString
-    ;end block
-
-    ;print new line "\n"
-    mov rdi, newLine
-    call printString
+mov rdi, name
+call printString
 ;end block
 
+;print new line "\n"
+mov rdi, newLine
+call printString
+;end block
 ;terminate
+restore
 mov rax, 60
 mov rdi, 0
 syscall
 ;end block
-
-restore
 ret

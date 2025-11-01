@@ -15,7 +15,7 @@
 ; Program Information:
 ; Name: getline.asm
 ; Languages: X86, bash
-; Start Date: 10-23-2024
+; Start Date: 10-23-2025
 ; Completion Date: 
 ;
 ; Translator Information:
@@ -65,29 +65,29 @@ mov r12, 0 ; char count
 ;end block
 
 readCharacters:
-    mov rax, SYS_read ; system code for read
-    mov rdi, STDIN ; standard in
-    lea rsi, byte [chr] ; address of chr
-    mov rdx, 1 ; count (how many to read)
-    syscall ; do syscall
+mov rax, SYS_read ; system code for read
+mov rdi, STDIN ; standard in
+lea rsi, byte [chr] ; address of chr
+mov rdx, 1 ; count (how many to read)
+syscall ; do syscall
 
-    ;check if linefeed is inputted. if true, input is done.
-    mov al, byte [chr] ; get character just read
-    cmp al, LF ; if linefeed, input done
-    je readDone
-    ;end block
+;check if linefeed is inputted. if true, input is done.
+mov al, byte [chr] ; get character just read
+cmp al, LF ; if linefeed, input done
+je readDone
+;end block
 
-    ; check if max character amount is reached
-    inc r12
-    cmp r12, STRLEN
-    jae readCharacters
-    ;end block
+; check if max character amount is reached
+inc r12
+cmp r12, STRLEN
+jae readCharacters
+;end block
 
-    mov byte [rbx], al ; rdi[i] = chr
-    inc rbx ; update tmpStr addr
-    jmp readCharacters
+mov byte [rbx], al ; rdi[i] = chr
+inc rbx ; update tmpStr addr
+jmp readCharacters
 readDone:
-    mov byte [rbx], NULL ; add NULL termination
-    mov rax, rbx
+mov byte [rbx], NULL ; add NULL termination
+mov rax, rbx
 restore
 ret

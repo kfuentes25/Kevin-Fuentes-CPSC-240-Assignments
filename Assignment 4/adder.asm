@@ -15,9 +15,9 @@
 ; Email: kevinfuentes0015@csu.fullerton.edu
 ;
 ; Program Information:
-; Name: arithmetic.asm
+; Name: adder.asm
 ; Languages: X86, bash
-; Start Date: 10-23-2024
+; Start Date: 10-23-2025
 ; Completion Date: 
 ;
 ; Program's Purpose: to receive inputs for the contents of an array of float numbers
@@ -27,27 +27,18 @@
 ;
 ;===== Begin code area =======================================================================================================================
 global adder
-extern ftoa
-extern stringtof
 
 %include "data.inc"
 
 segment .data
-
-
 segment .bss
-current_elem resb 64
-
 segment .text
 
 adder:
 backup
 mov r15, rdi
 mov r14, rsi
-mov r13, 0
-;end block
-
-; Zero out xmm15
+xor r13, r13
 xorpd xmm15, xmm15
 ;end block
 
@@ -57,24 +48,17 @@ cmp r13, r14
 jge exit
 ;end block
 
-; Get pointer to current string element
-mov rdi, [r15 + r13*8]
-call stringtof
-;end block
-
 ; Add the converted float to our running sum
+movsd xmm0, [r15+r13*8]
 addsd xmm15, xmm0
 inc r13
 jmp sum_loop
 ;end block
 
 exit:
-; Convert the sum (in xmm15) to a string
+; return the sum to xmm0
 movsd xmm0, xmm15
-call ftoa
-mov r15, rax
 ;end block
 
 restore
-; Return (string pointer in rax from ftoa)
 ret

@@ -15,7 +15,7 @@
 ; Program Information:
 ; Name: input_array.asm
 ; Languages: X86, bash
-; Start Date: 10-23-2024
+; Start Date: 10-23-2025
 ; Completion Date: 
 ;
 ; Translator Information:
@@ -44,62 +44,62 @@ input_array:
 
 backup
 ;receive the array, its size, create an increment counter, and jump to the start of the loop
-    mov r15, rdi
-    mov r14, rsi
-    xor r13, r13
-    jmp inputloop
+mov r15, rdi
+mov r14, rsi
+xor r13, r13
+jmp inputloop
 ;end block
 
 ;block outputs that input is not floating point string and sends user back to top of the loop
 try_again:
-    mov rdi, not_a_float
-    call printString
-    jmp inputloop
+mov rdi, not_a_float
+call printString
+jmp inputloop
 ;end block
 
 inputloop:
 ;check if capacity has been reached
-    cmp r13, r14
-    jge done
+cmp r13, r14
+jge done
 ;endblock
 
 ;block inputs 1 num as a string
-    mov rdi, stringnum
-    call getline
+mov rdi, stringnum
+call getline
 ;endblock
 
 ;check if input is just a newline
-    mov al, byte [stringnum]
-    cmp al, LF
-    je done
-    cmp al, 0
-    je done
+mov al, byte [stringnum]
+cmp al, LF
+je done
+cmp al, 0
+je done
 ;end block
 
 ;Validate input
-    mov rdi, stringnum
-    call isfloat
+mov rdi, stringnum
+call isfloat
 ;end block
 
 ;jump back to send error message and restart loop
-    cmp rax, 0
-    je try_again
+cmp rax, 0
+je try_again
 ;end block
 
 ;block that converts stringnum to xmm0
-    mov rdi, stringnum
-    call stringtof
+mov rdi, stringnum
+call stringtof
 ;endblock
 
 ;add to array r15 at position r13
-    movsd [r15+r13*8], xmm0
-    inc r13
-    jmp inputloop
+movsd [r15+r13*8], xmm0
+inc r13
+jmp inputloop
 ;endblock
 
 ;done function to leave input array and return count to arithmetic
 done:
-    mov rax, r13
+mov rax, r13
 ;end block
 restore
 ret

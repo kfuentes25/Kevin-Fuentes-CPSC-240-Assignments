@@ -13,9 +13,9 @@
 ; Email: kevinfuentes0015@csu.fullerton.edu
 ;
 ; Program Information:
-; Name: getline.asm
+; Name: printString.asm
 ; Languages: X86, bash
-; Start Date: 10-23-2024
+; Start Date: 10-23-2025
 ; Completion Date: 
 ;
 ; Translator Information:

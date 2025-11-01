@@ -15,7 +15,7 @@
 ; Program Information:
 ; Name: output_array.asm
 ; Languages: X86, bash
-; Start Date: 10-23-2024
+; Start Date: 10-23-2025
 ; Completion Date: 
 ;
 ; Translator Information:
@@ -50,6 +50,7 @@ begin_loop:
 cmp r13, r14
 jge exit
 ;end block
+
 ; Save our registers before calling functions that reuse them for different things
 push r15
 push r14
@@ -83,6 +84,7 @@ jmp begin_loop
 ;end block
 
 exit:
+mov rax, r13
 restore
 
 ;Return
