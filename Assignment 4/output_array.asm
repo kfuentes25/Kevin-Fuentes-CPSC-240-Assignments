@@ -56,13 +56,12 @@ push r14
 push r13
 ;end block
 
-
-; Outputs 1 floating-point number
+; converts 1 floating-point number to an ASCII
 movsd xmm0, [r15+8*r13]
 call ftoa
 ;end block
 
-; block start
+; output each element in the array as ASCII strings
 mov rdi, rax
 call printString
 ;end block
@@ -85,7 +84,6 @@ jmp begin_loop
 
 exit:
 restore
-mov rax, r13
 
 ;Return
 ret

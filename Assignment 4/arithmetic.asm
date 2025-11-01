@@ -33,6 +33,8 @@ extern input_array
 extern output_array
 extern getline
 extern printString
+extern adder
+extern ftoa
 
 %include "data.inc"
 
@@ -60,6 +62,7 @@ chr resb 1
 name resb 50+2
 myarr resq 64
 arrlength resb 1
+sum_string resb 16
 
 segment .text
 
@@ -77,8 +80,6 @@ mov rdi, name
 call getline
 ;end block
 
-mov r8, [name]
-
 ; Block to to output the string input_nums_msg
 mov rdi, input_nums_msg
 call printString
@@ -90,7 +91,9 @@ mov rsi, 63
 call input_array
 ; end block
 
+;store the length of the array in a variable "arrlength"
 mov [arrlength], rax
+;endblock
 
 ; Block to to output the string thank_you_msg
 mov rdi, thank_you_msg
@@ -98,10 +101,38 @@ call printString
 ;endblock
 
 ;call output array
+mov rdi, myarr
+mov rsi, [arrlength]
+call output_array
+;endblock
+
+; call the adder function to use the float values
     mov rdi, myarr
     mov rsi, [arrlength]
-    call output_array
-;endblock
+    call adder
+;end block
+
+;store the sum in "sum_string"
+xor r15, r15
+mov [sum_string], rax
+;end block
+
+
+;output the sum is message
+    mov rdi, the_sum_is
+    call printString
+    ;end block
+
+    ;output the sum_string
+    mov rdi, sum_string
+    call printString
+    ;end block
+
+    ;print new line "\n"
+    mov rdi, newLine
+    call printString
+    ;end block
+;end block
 
 ; print out end msg
 mov rdi, have_a_nice_day
@@ -109,18 +140,18 @@ call printString
 ;end block
 
 ;output name
-mov rdi, name
-call printString
-;end block
+    mov rdi, name
+    call printString
+    ;end block
 
-;print new line "\n"
-mov rdi, newLine
-call printString
-;end block
+    ;print new line "\n"
+    mov rdi, newLine
+    call printString
+    ;end block
 
-;print new line "\n"
-mov rdi, newLine
-call printString
+    ;print new line "\n"
+    mov rdi, newLine
+    call printString
 ;end block
 
 ;terminate

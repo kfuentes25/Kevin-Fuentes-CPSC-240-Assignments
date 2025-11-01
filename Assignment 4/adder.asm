@@ -28,44 +28,53 @@
 ;===== Begin code area =======================================================================================================================
 global adder
 extern ftoa
+extern stringtof
 
 %include "data.inc"
 
 segment .data
+
+
 segment .bss
+current_elem resb 64
+
 segment .text
 
 adder:
 backup
-;receive the array, its size, and create an increment counter
 mov r15, rdi
 mov r14, rsi
 mov r13, 0
 ;end block
 
-; zero out xmm15
+; Zero out xmm15
 xorpd xmm15, xmm15
 ;end block
 
 sum_loop:
-;check if the loop counter is at the end of the array
+; Check if the loop counter is at the end of the array
 cmp r13, r14
 jge exit
 ;end block
 
-; Block to sum the contents of the array
-movsd xmm14, [r15+r13*8]
-addsd xmm15, xmm14
+; Get pointer to current string element
+mov rdi, [r15 + r13*8]
+call stringtof
+;end block
+
+; Add the converted float to our running sum
+addsd xmm15, xmm0
 inc r13
 jmp sum_loop
 ;end block
 
 exit:
-;mov value from xmm14 t0 xmm0 to return to driver
+; Convert the sum (in xmm15) to a string
 movsd xmm0, xmm15
 call ftoa
+mov r15, rax
 ;end block
-restore
 
-; Return
+restore
+; Return (string pointer in rax from ftoa)
 ret

@@ -38,7 +38,7 @@ not_a_float db "The last input was invalid and not entered into the array", 10, 
 
 segment .bss
 stringnum resb 64
-chr resb 1
+
 segment .text
 input_array:
 
@@ -86,19 +86,16 @@ inputloop:
     je try_again
 ;end block
 
-;block that converts r9 to xmm0
+;block that converts stringnum to xmm0
     mov rdi, stringnum
     call stringtof
-    movsd xmm15, xmm0
 ;endblock
 
 ;add to array r15 at position r13
-    movsd [r15+r13*8], xmm15
+    movsd [r15+r13*8], xmm0
     inc r13
     jmp inputloop
 ;endblock
-
-
 
 ;done function to leave input array and return count to arithmetic
 done:
