@@ -54,16 +54,15 @@ segment .text
 
 printString:
 backup
+; =========================================================This section of code is from the book!=========================================================
 ;move thing to output to rbx and rdx is character counter
 mov rbx, rdi
 mov rdx, 0
 ;end block
 
 strCountLoop:
-
 cmp byte [rbx], 0
 je strCountDone
-
 inc rdx
 inc rbx
 jmp strCountLoop
@@ -78,7 +77,7 @@ mov rax, SYS_write ; system code for write()
 mov rsi, rdi ; address of chars to write
 mov rdi, STDOUT ; standard out ; RDX=count to write, set above
 syscall
-
+; =========================================================This section of code is from the book!=========================================================
 prtDone:
 restore
 ret

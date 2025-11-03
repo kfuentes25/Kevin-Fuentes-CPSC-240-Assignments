@@ -148,6 +148,7 @@ call printString
 mov rdi, newLine
 call printString
 ;end block
+
 ;terminate
 restore
 mov rax, 60

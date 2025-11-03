@@ -28,6 +28,7 @@ extern printString
 
 %include "data.inc"
 
+; =========================================================This section of code is from the book!=========================================================
 
 section .data
     LF equ 10 ; line feed
@@ -91,3 +92,4 @@ mov byte [rbx], NULL ; add NULL termination
 mov rax, rbx
 restore
 ret
+; =========================================================This section of code is from the book!=========================================================
