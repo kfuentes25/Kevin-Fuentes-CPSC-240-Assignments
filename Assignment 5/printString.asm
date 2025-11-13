@@ -13,7 +13,7 @@
 ; Email: kevinfuentes0015@csu.fullerton.edu
 ;
 ; Program Information:
-; Name: output_array.asm
+; Name: printString.asm
 ; Languages: X86, bash
 ; Start Date: 10-23-2025
 ; Completion Date: 
@@ -24,68 +24,60 @@
 ;===== Begin code area =======================================================================================================================
 
 
-global output_array
-extern printString
-extern ftoa
+global printString
 
 %include "data.inc"
 
 segment .data
-linefeed db 10, 0
-segment .bss
+LF equ 10 ; line feed
+NULL equ 0 ; end of string
+TRUE equ 1
+FALSE equ 0
+EXIT_SUCCESS equ 0 ; success code
+STDIN equ 0 ; standard input
+STDOUT equ 1 ; standard output
+STDERR equ 2 ; standard error
+SYS_read equ 0 ; read
+SYS_write equ 1 ; write
+SYS_open equ 2 ; file open
+SYS_close equ 3 ; file close
+SYS_fork equ 57 ; fork
+SYS_exit equ 60 ; terminate
+SYS_creat equ 85 ; file open/create
+SYS_time equ 201 ; get time
 
+;  Define some strings.
+STRLEN equ 50
+newLine db LF, NULL
+segment .bss
 segment .text
 
-output_array:
+printString:
 backup
-
-;receive the array, its size, and create an increment counter
-mov r15, rdi
-mov r14, rsi
-xor r13, r13
+; =========================================================This section of code is from the book!=========================================================
+;move thing to output to rbx and rdx is character counter
+mov rbx, rdi
+mov rdx, 0
 ;end block
 
-begin_loop:
-; compare the increment counter and array size to see if were done
-cmp r13, r14
-jge exit
+strCountLoop:
+cmp byte [rbx], 0
+je strCountDone
+inc rdx
+inc rbx
+jmp strCountLoop
+strCountDone:
+; check if empty str
+cmp rdx, 0
+je prtDone
 ;end block
 
-; Save our registers before calling functions that reuse them for different things
-push r15
-push r14
-push r13
-;end block
-
-; converts 1 floating-point number to an ASCII
-movsd xmm0, [r15+8*r13]
-call ftoa
-;end block
-
-; output each element in the array as ASCII strings
-mov rdi, rax
-call printString
-;end block
-
-;print a newline
-mov rdi, linefeed
-call printString
-;end block
-
-; Restore our registers with the saved values!
-pop r13
-pop r14
-pop r15
-;end block
-
-; increments the counter
-inc r13
-jmp begin_loop
-;end block
-
-exit:
-mov rax, r13
+;  Call OS to output string.
+mov rax, SYS_write ; system code for write()
+mov rsi, rdi ; address of chars to write
+mov rdi, STDOUT ; standard out ; RDX=count to write, set above
+syscall
+; =========================================================This section of code is from the book!=========================================================
+prtDone:
 restore
-
-;Return
 ret
