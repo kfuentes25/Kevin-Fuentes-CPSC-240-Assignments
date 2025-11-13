@@ -31,6 +31,9 @@ extern getline
 extern printString
 
 segment .data
+STRLEN equ 50
+
+
 
 ;First block
 welcome db "Welcome to Random Products, LLC.", 10, 0
@@ -58,10 +61,19 @@ ieee754_and_scientific_decimal_format db "0x%-181X%.13g", 10, 0
 segment .bss
 name resb 50+2
 title resb 50+2
+
 myarr resq 64
 arrlength resb 1
 
 
 segment .text
-executive:
+_start:
+backup
+mov rdi, welcome
+mov rsi, STRLEN
+call printString
 
+restore
+mov rdi, 1
+mov rsi, 60
+syscall
