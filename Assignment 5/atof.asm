@@ -1,162 +1,234 @@
-;*****************************************************************************************************************************                                                      *
-; This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License  *
-; version 3 as published by the Free Software Foundation.                                                                    *
-; This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied         *
-; warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.     *
-; A copy of the GNU General Public License v3 is available here:  <https://www.gnu.org/licenses/>.                           *
-;*****************************************************************************************************************************
+; //****************************************************************************************************************************
+; //Program name: "stringtof". This program will be called from _start.asm and will receive a char array. The program will then
+; //               take that char array and convert it into a float number. It will then be returned to _start.asm as a float number (xmm)
+; //               Copyright (C) 2022 Timothy Vu.
+; //               Copyright (C) 2025 Sara Sadek.
+; //                                                                                                                           *
+; //This file is part of the software program "stringtof".                                                                   *
+; //stringtof is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License   *
+; //version 3 as published by the Free Software Foundation.                                                                    *
+; //stringtof is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied          *
+; //warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.     *
+; //A copy of the GNU General Public License v3 is available here:  <https:;www.gnu.org/licenses/>.                            *
+; //****************************************************************************************************************************
+; //=======1=========2=========3=========4=========5=========6=========7=========8=========9=========0=========1=========2=========3**//
 ;
-; Author Information:
-; Name: Kevin Fuentes
-; CWID: 885809459
-; Section: CPSC 240-13
-; Email: kevinfuentes0015@csu.fullerton.edu
-;
-; Program Information:
-; Name: atof.asm
-; Languages: X86, bash
-; Start Date: 10-31-2025
-; Completion Date: 10-31-2025
-;
-; Translator Information:
-; Linux: Ubuntu
-;
-;===== Begin code area =======================================================================================================================
+; //Author information
+; //  Author name: Timothy Vu
+; //  Author email: timothy.vu@csu.fullerton.edu
+; //
+; //  Author name: Sara Sadek
+; //  Author email: EBYEMJC1@csu.fullerton.edu
+; //
+; //Program information
+; //  Program name: stringtof
+; //  Programming languages: X86 Assembly
+; //  Date program began: 2022 October 23
+; //  Date of last update: 2025 November 01
+; //
+; //Contributions
+; //  [2022] Timothy Vu:
+; //    - Initial creation of the module.
+; //    - Implemented logic to convert a string to an integer and then to a float,
+; //      handling whole numbers and decimal places via integer arithmetic and division.
+; //
+; //  [2025] Sara Sadek:
+; //    - Rewrite of the conversion algorithm with the help and guidance of AI.
+; //    - Implemented a more robust method using direct floating-point (XMM) arithmetic and help from AI.
+; //    - The new logic separates the integer and fractional parts, processes them as floats,
+; //      and then combines them for a more accurate result.
+; //    - Renamed the function entry point from "stringtof" to "atof" to better reflect its C standard library equivalent.
+; //
+; //How to Contribute & Update License
+; //  If you make significant modifications to this file, please follow these steps to document your work.
+; //
+; //  For a New Author:
+; //  1. Add a new copyright line at the top: "; //               Copyright (C) [Year] [Your Name]."
+; //  2. Add your name and email under the "Author information" section.
+; //  3. Update the "Date of last update".
+; //  4. Add a new, year-stamped entry under the "Contributions" section detailing your changes.
+; //
+; //  For a Returning Author:
+; //  1. Update your existing copyright line with the new year of contribution.
+; //  2. Update the "Date of last update".
+; //  3. Add a new, year-stamped entry under the "Contributions" section for your latest changes.
+; //
+; //  Example for a Returning Author:
+; //  If Timothy Vu returns in 2027 to add a new feature, he would make the following changes:
+; //
+; //  1. Update the Copyright Line:
+; //     - FROM: "; //               Copyright (C) 2022 Timothy Vu."
+; //     - TO:   "; //               Copyright (C) 2022, 2027 Timothy Vu."
+; //
+; //  2. Update the Date:
+; //     - FROM: "; //  Date of last update: 2025 November 01"
+; //     - TO:   "; //  Date of last update: 2027 March 15" (or the current date)
+; //
+; //  3. Add to Contributions:
+; //     - ADD a new entry like this under his name:
+; //       ; //  [2027] Timothy Vu:
+; //       ; //    - Added support for scientific 'e' notation.
+; //
+; //Purpose
+; //  The purpose of this file is to receive a char array, convert that array into a float number, and
+; //  return the result as a float number (xmm0).
+; //
+; //This file
+; //   File name: stringtof.asm
+; //   Language: x86
+; //   Max page width: 139 columns
+; //   Compile: nasm -f elf64 -o stringtof.o -l stringtof.lis stringtof.asm
+; //   Linker: ld -o final.out _start.o strlen.o cosine.o itoa.o _math.o ftoa.o stringtof.o
+; //
+; //=======1=========2=========3=========4=========5=========6=========7=========8=========9=========0=========1=========2=========3**
+; //
+; //
+; //===== Begin code area ===========================================================================================================
+;Assembler directives
+base_number equ 10                      ;10 base of the decimal number system
+ascii_zero equ 48                       ;48 is the ascii value of '0'
+null equ 0
+minus equ '-'
+decimal_point equ '.'
+
+;Global declaration for linking files.
+global atof                          ;This makes atolong callable by functions outside of this file.
+
+segment .data                           ;Place initialized data here
+   ;This segment is empy
+    ten_float   dq 10.0     ; Floating point constant for 10.0
+    minus_one   dq -1.0     ; Floating point constant for -1.0
+
+segment .bss                            ;Declare pointers to un-initialized space in this segment.
+   ;This segment is empty
+
+;==============================================================================================================================
+;===== Begin the executable code here.
+;==============================================================================================================================
+segment .text                           ;Place executable instructions in this segment.
+
+atof:                                ;Entry point.  Execution begins here.
+
+;The next two instructions should be performed at the start of every assembly program.
+push rbp                                ;This marks the start of a new stack frame belonging to this execution of this function.
+mov  rbp, rsp                           ;rbp holds the address of the start of this new stack frame.
+;The following pushes are performed for safety of the data that may already be in the remaining GPRs.
+;This backup process is especially important when this module is called by another asm module.  It is less important when called
+;called from a C or C++ function.
+push rbx
+push rcx
+push rdx
+push rdi
+push rsi
+push r8
+push r9
+push r10
+push r11
+push r12
+push r13
+push r14
+push r15
+pushf
 
 
-;Declarations
-global stringtof
+ ; rdi = pointer to the input string
+    xor     rsi, rsi            ; rsi = index into the string, starts at 0
+    xor     r12, r12            ; r12b will be our neg_flag (0 = positive, 1 = negative)
+    xorpd   xmm0, xmm0          ; xmm0 will hold the integer part of the number
+    xorpd   xmm1, xmm1          ; xmm1 will hold the fractional part of the number
 
-;Declare initialized data in this section
-segment .data
-; Constants for floating-point arithmetic.
-ten       dq 10.0        ; constant 10.0 for integer accumulation
-oneTenth  dq 0.1         ; constant 0.1 for fractional digit weight
+    ; --- 1. Handle Sign ---
+    cmp     byte [rdi + rsi], '-'
+    jne     check_positive_sign
+    mov     r12b, 1             ; Set neg_flag
+    inc     rsi                 ; Move to the next character
+    jmp     integer_loop_start
 
-;Declare uninitialized data in this section
-segment .bss
- ;this section is empty
+check_positive_sign:
+    cmp     byte [rdi + rsi], '+'
+    jne     integer_loop_start
+    inc     rsi                 ; Move to the next character
 
-;Executable instructions in this section
-segment .text
+    ; --- 2. Process Integer Part ---
+integer_loop_start:
+    ; Check if the current character is a digit
+    movzx   rax, byte [rdi + rsi]
+    cmp     rax, '0'
+    jl      handle_decimal_point ; If less than '0', it's not a digit
+    cmp     rax, '9'
+    jg      handle_decimal_point ; If greater than '9', it's not a digit
 
-stringtof:
+    ; It is a digit, so process it
+    ; xmm0 = xmm0 * 10.0
+    mulsd   xmm0, [ten_float]
 
-;Block that backs up almost all GPRs
-;Back up the general purpose registers for the sole purpose of protecting the data of the caller.
-push rbp                                          ;Backup rbp
-mov  rbp,rsp                                      ;The base pointer now points to top of stack
-push rdi                                          ;Backup rdi
-push rsi                                          ;Backup rsi
-push rdx                                          ;Backup rdx
-push rcx                                          ;Backup rcx
-push r8                                           ;Backup r8
-push r9                                           ;Backup r9
-push r10                                          ;Backup r10
-push r11                                          ;Backup r11
-push r12                                          ;Backup r12
-push r13                                          ;Backup r13
-push r14                                          ;Backup r14
-push r15                                          ;Backup r15
-push rbx                                          ;Backup rbx
-pushf                                             ;Backup rflags
+    ; Convert char to integer ('5' -> 5)
+    sub     rax, '0'
 
-; Set xmm15 (the result) to 0.0
-xorpd   xmm15, xmm15
-; Load constant 10.0 into xmm14 and 0.1 into xmm13
-movsd   xmm14, [ten]
-movsd   xmm13, [oneTenth]
+    ; Convert integer to float and add to our total
+    cvtsi2sd xmm2, rax          ; xmm2 = (double)rax
+    addsd   xmm0, xmm2          ; xmm0 = xmm0 + new_digit
 
-; Initialize sign flag (r15b will hold 0 for positive, 1 for negative)
-xor     r15, r15           ; assume positive
+    inc     rsi
+    jmp     integer_loop_start
 
-; Check for leading sign
-mov     al, byte [rdi]
-cmp     al, '-'
-jne     check_plus
-mov     r15b, 1            ; set negative flag
-add     rdi, 1             ; skip the '-'
-jmp     integer_loop
+    ; --- 3. Handle Decimal Point ---
+handle_decimal_point:
+    cmp     byte [rdi + rsi], '.'
+    jne     combine_parts       ; If not a decimal, we are done parsing
+    inc     rsi                 ; Move past the '.'
 
-check_plus:
-cmp     al, '+'
-jne     integer_loop       ; no sign, proceed normally
-add     rdi, 1             ; skip the '+'
+    ; --- 4. Process Fractional Part ---
+    ; Setup for the fractional loop
+    mov     r13, ten_float      ; Use memory address of 10.0
+    movsd   xmm3, [r13]         ; xmm3 = divisor, starting at 10.0
 
-integer_loop:
-; Load next character from string (simulate movzx)
-mov     al, byte [rdi]     ; load a byte into al
-and     eax, 0xFF          ; zero-extend into eax using AND
-cmp     eax, 0             ; compare to null terminator
-je      finish_number      ; if zero, finished
-cmp     al, '.'            ; is it a decimal point?
-je      fractional_process
-cmp     al, '0'
-jb      finish_number      ; if below '0', stop processing
-cmp     al, '9'
-ja      finish_number      ; if above '9', stop processing
-sub     al, '0'            ; convert ASCII digit to numeric value
-; (eax now holds a value between 0 and 9)
-cvtsi2sd xmm12, eax         ; convert integer digit to double (in xmm12)
-mulsd   xmm15, xmm14         ; result = result * 10.0
-addsd   xmm15, xmm12         ; result = result + digit value
-add     rdi, 1             ; move to next character (using add instead of inc)
-jmp     integer_loop
+fractional_loop_start:
+    ; Check if the current character is a digit
+    movzx   rax, byte [rdi + rsi]
+    cmp     rax, '0'
+    jl      combine_parts       ; Not a digit, finish up
+    cmp     rax, '9'
+    jg      combine_parts       ; Not a digit, finish up
 
-;Passing decimal point after done with int
-fractional_process:
-add     rdi, 1             ; skip the decimal point
-; Set initial fractional weight in xmm11 = 0.1
-movsd   xmm11, [oneTenth]
+    ; It's a digit, process it
+    sub     rax, '0'            ; Convert char to integer
+    cvtsi2sd xmm2, rax          ; Convert integer to float (e.g., 7 -> 7.0)
 
-;Process the right side of the decimal
-fraction_loop:
-mov     al, byte [rdi]
-and     eax, 0xFF
-cmp     eax, 0
-je      finish_number
-cmp     al, '0'
-jb      finish_number
-cmp     al, '9'
-ja      finish_number
-sub     al, '0'
-cvtsi2sd xmm12, eax         ; convert digit to double
-mulsd   xmm12, xmm11         ; multiply by current weight
-addsd   xmm15, xmm12         ; add to result
-mulsd   xmm11, xmm13         ; update weight: weight = weight * 0.1
-add     rdi, 1             ; move to next character
-jmp     fraction_loop
+    divsd   xmm2, xmm3          ; xmm2 = digit / divisor (e.g., 7.0 / 10.0 = 0.7)
+    addsd   xmm1, xmm2          ; Add to fractional total
+
+    mulsd   xmm3, [ten_float]   ; Update divisor for next digit (10 -> 100 -> 1000)
+    inc     rsi
+    jmp     fractional_loop_start
+
+    ; --- 5. Final Combination ---
+combine_parts:
+    addsd   xmm0, xmm1          ; Final number = integer part + fractional part
+
+    ; Apply the negative sign if the flag was set
+    cmp     r12b, 1
+    jne     epilogue
+    mulsd   xmm0, [minus_one]   ; Make the number negative
 
 
-finish_number:
-; Apply sign if negative
-cmp     r15b, 1
-jne     positive_result
-xorpd   xmm12, xmm12       ; zero register
-subsd   xmm12, xmm15       ; 0.0 - result = -result
-movsd   xmm15, xmm12
-
-positive_result:
-;Move the float to xmm0 so it is returned to caller
-movsd xmm0, xmm15
-
-;Restore all general purpose registers to their original values
-popf                                    ;Restore rflags
-pop rbx                                 ;Restore rbx
-pop r15                                 ;Restore r15
-pop r14                                 ;Restore r14
-pop r13                                 ;Restore r13
-pop r12                                 ;Restore r12
-pop r11                                 ;Restore r11
-pop r10                                 ;Restore r10
-pop r9                                  ;Restore r9
-pop r8                                  ;Restore r8
-pop rcx                                 ;Restore rcx
-pop rdx                                 ;Restore rdx
-pop rsi                                 ;Restore rsi
-pop rdi                                 ;Restore rdi
-pop rbp                                 ;Restore rbp
-
-ret
-
-;End of the function stringtof   ====================================================================
+epilogue:
+;==================================================================================================================================
+;Epilogue: restore data to the values held before this function was called.
+popf
+pop r15
+pop r14
+pop r13
+pop r12
+pop r11
+pop r10
+pop r9
+pop r8
+pop rsi
+pop rdi
+pop rdx
+pop rcx
+pop rbx
+pop rbp                       ;Now the system stack is in the same state it was when this function began execution.
+ret                           ;Pop a qword from the stack into rip, and continue executing..
+;========== End of module atol.asm ================================================================================================; //****************************************************************************************************************************

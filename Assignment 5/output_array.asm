@@ -16,7 +16,7 @@
 ; Name: output_array.asm
 ; Languages: X86, bash
 ; Start Date: 10-23-2025
-; Completion Date: 
+; Completion Date: 10-31-2025
 ;
 ; Translator Information:
 ; Linux: Ubuntu
