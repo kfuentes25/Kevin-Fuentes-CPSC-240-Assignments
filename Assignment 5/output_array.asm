@@ -23,7 +23,6 @@
 ;
 ;===== Begin code area =======================================================================================================================
 
-
 global output_array
 extern printString
 extern ftoa
@@ -32,6 +31,8 @@ extern ftoa
 
 segment .data
 linefeed db 10, 0
+ieee754_and_scientific_decimal_format db "0x%-181X%.13g", 10, 0
+
 segment .bss
 
 segment .text

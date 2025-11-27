@@ -35,6 +35,7 @@ extern printString
 extern atof
 extern isnan
 extern normalized
+extern fill_random_array
 
 segment .data
 STRLEN equ 50
@@ -67,7 +68,6 @@ hope_you_enjoyed db ". We hope you enjoyed your arrays.", 10, 0
 
 
 ;Fifth block
-ieee754_and_scientific_decimal_format db "0x%-181X%.13g", 10, 0
 newLine db LF, 0
 
 segment .bss
@@ -160,7 +160,7 @@ call getline
 ;convert user input string to integer
 mov rsi, arrlength
 call atof
-mov[arrlength], rax ;store the length of the array as an int in arrlength instead of a string
+movsd [arrlength], xmm0 ;store the length of the array as an int in arrlength instead of a string
 ;endblock
 
 ;print your numbers have been stored message
@@ -170,23 +170,18 @@ mov rsi, STRLEN
 call printString
 ;endblock
 
-
 ;generate random numbers and store in array
+mov rax, 0
 mov rdi, myarr
-mov rsi, [arrlength]
+mov rsi, arrlength
 call fill_random_array
 ;endblock
-
-
 
 ; ;output the array of random numbers
 ; mov rdi, myarr
 ; mov rsi, [arrlength]
 ; call output_array
 ; ;endblock
-
-
-
 
 
 
@@ -203,6 +198,11 @@ call printString
 
 
 
+; ;output the array of random numbers
+; mov rdi, myarr
+; mov rsi, [arrlength]
+; call output_array
+; ;endblock
 
 
 
