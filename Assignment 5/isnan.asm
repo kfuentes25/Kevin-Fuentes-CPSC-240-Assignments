@@ -9,7 +9,7 @@
 ;both operands are normal numbers (not nans).
 
 global isnan
-extern printf
+%include "data.inc"
 
 segment .data
    ;empty

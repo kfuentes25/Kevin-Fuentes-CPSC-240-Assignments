@@ -1,5 +1,5 @@
 ;*************************************************************************************************************************************
-; Program Name: "executive.asm". This program demonstrates its purpose as a driver for all things. Copyright (C) 2025  Kevin Fuentes *                                                          *
+; Program Name: "executive.asm". This program demonstrates its purpose as a driver for all things. Copyright (C) 2025  Kevin Fuentes *
 ; This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License          *
 ; version 3 as published by the Free Software Foundation.                                                                            *
 ; This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied                 *
@@ -60,11 +60,8 @@ have_been_stored db "Your numbers have been stored in an array.  Here is that ar
 ;Fourth blocks"
 now_be_normalized db "The array will now be normalized to the range 1.0 to 2.0  Here is the normalized array", 10, 10, 0
 goodbye db "Good bye ", 0
-you_are_welcome db ". You are welcome any time.", 10, 10, 0
+you_are_welcome db ". You are welcome any time.", 10, 0
 return_zero db "A zero will be returned to the operating system.", 10, 10, 0
-
-oh_msg db "Oh, ", 0
-hope_you_enjoyed db ". We hope you enjoyed your arrays.", 10, 0
 
 
 ;Fifth block
@@ -75,7 +72,7 @@ name resb 50+2
 title resb 50+2
 
 myarr resq 64
-arrlength resb 1
+arrlength resq 1
 
 
 segment .text
@@ -158,9 +155,11 @@ call getline
 ;endblock
 
 ;convert user input string to integer
-mov rsi, arrlength
+mov rax, 0
+mov rdi, arrlength
 call atof
-movsd [arrlength], xmm0 ;store the length of the array as an int in arrlength instead of a string
+cvtsd2si r15, xmm0
+mov [arrlength], r15
 ;endblock
 
 ;print your numbers have been stored message
@@ -173,7 +172,7 @@ call printString
 ;generate random numbers and store in array
 mov rax, 0
 mov rdi, myarr
-mov rsi, arrlength
+mov rsi, [arrlength]
 call fill_random_array
 ;endblock
 
@@ -182,11 +181,6 @@ call fill_random_array
 ; mov rsi, [arrlength]
 ; call output_array
 ; ;endblock
-
-
-
-
-
 
 ;print that the array will now be normalized
 mov rax, 0
@@ -231,25 +225,6 @@ call printString
     call printString
     ;endblock
 
-    ;print oh message
-    mov rax, 0
-    mov rdi, oh_msg
-    call printString
-    ;endblock
-
-    ;print user name again
-    mov rax, 0
-    mov rdi, name
-    call printString
-    ;endblock
-
-    ;print hope you enjoyed message
-    mov rax, 0
-    mov rdi, hope_you_enjoyed
-    mov rsi, STRLEN
-    call printString
-    ;endblock
-
     ;print last line
     mov rax, 0
     mov rdi, return_zero
@@ -264,7 +239,6 @@ restore
 ;exit program
 mov rax, 60
 mov rdi, 0
-syscall
 syscall
 ret
 ;endblock

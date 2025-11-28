@@ -24,35 +24,33 @@
 ;===== Begin code area =======================================================================================================================
 
 global normalize_array
-%include "data.inc"
-segment .data                 ;Place initialized data here
 
-segment .bss      ;Declare pointers to un-initialized space in this segment.
+%include "data.inc"
+segment .data
+
+segment .bss
 
 segment .text
 normalize_array:
 backup
 
 ; Moving arguments into Non-violatile registers
-mov r12, rdi ;our array
-mov r13, rsi ;number of values 
+mov r15, rdi
+mov r14, rsi
 
 ; Create counter for loop
-mov r14, 0
+mov r13, 0
 
 ; Check if numbers have been normalized
 check_size:
-cmp r14, r13
-jl normalize_loop
-
-; Jump to exit if done
-jmp exit
+cmp r13, r14
+jge exit
 
 ; Normalize loop if array has not been fully normalized
 normalize_loop:
 
-; Move number from array to stack to r12 to change the stored exp to 3ff.
-movsd xmm15, [r12 + r14 * 8]
+; Move number from array to stack to r15 to change the stored exp to 3ff.
+movsd xmm15, [r15 + r13 * 8]
 push qword 0
 movsd [rsp], xmm15
 pop r15
@@ -66,10 +64,10 @@ movsd xmm15, [rsp]
 pop r15
 
 ; Moving Normalized value into the array
-movsd [r12+r14*8], xmm15
+movsd [r15+r13*8], xmm15
   
 ; Increases counter after loop ends
-inc r14
+inc r13
 jmp check_size
 
 

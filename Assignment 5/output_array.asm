@@ -31,9 +31,12 @@ extern ftoa
 
 segment .data
 linefeed db 10, 0
-ieee754_and_scientific_decimal_format db "0x%-181X%.13g", 10, 0
+hex
+hex_prefix db "0x", 0
+space db "  ", 0
 
 segment .bss
+hex_buffer resb 17
 
 segment .text
 
@@ -52,41 +55,6 @@ cmp r13, r14
 jge exit
 ;end block
 
-; Save our registers before calling functions that reuse them for different things
-push r15
-push r14
-push r13
-;end block
-
-; converts 1 floating-point number to an ASCII
-movsd xmm0, [r15+8*r13]
-call ftoa
-;end block
-
-; output each element in the array as ASCII strings
-mov rdi, rax
-call printString
-;end block
-
-;print a newline
-mov rdi, linefeed
-call printString
-;end block
-
-; Restore our registers with the saved values!
-pop r13
-pop r14
-pop r15
-;end block
-
-; increments the counter
-inc r13
-jmp begin_loop
-;end block
-
 exit:
-mov rax, r13
 restore
-
-;Return
 ret
