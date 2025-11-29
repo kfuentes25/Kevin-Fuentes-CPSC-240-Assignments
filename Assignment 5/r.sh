@@ -28,14 +28,11 @@ nasm -f elf64 -o getline.o getline.asm
 echo "Assemble the X86 file printString.asm"
 nasm -f elf64 -o printString.o printString.asm
 
-echo "Assemble the X86 file atof.asm"
-nasm -f elf64 -o atof.o atof.asm
-
-echo "Assemble the X86 file ftoa.asm"
-nasm -f elf64 -o ftoa.o ftoa.asm
+echo "Assemble the X86 file atol.asm"
+nasm -f elf64 -o atol.o atol.asm
 
 echo "Link the all 'O' files"
-ld -o go.out printString.o getline.o normalize.o isnan.o fill_random_array.o output_array.o executive.o atof.o ftoa.o
+ld -o go.out printString.o getline.o normalize.o isnan.o fill_random_array.o output_array.o executive.o atol.o
 
 echo "Next the program ""Non-deterministic Random Numbers"" will run"
 ./go.out

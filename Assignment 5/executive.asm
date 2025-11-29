@@ -27,15 +27,14 @@
 ;===== Begin code area =======================================================================================================================
 global _start
 
-%include "data.inc"
-extern rdrand
 extern output_array
 extern getline
 extern printString
-extern atof
-extern isnan
-extern normalized
+extern atolong
+extern normalize_array
 extern fill_random_array
+%include "data.inc"
+
 
 segment .data
 STRLEN equ 50
@@ -63,6 +62,7 @@ goodbye db "Good bye ", 0
 you_are_welcome db ". You are welcome any time.", 10, 0
 return_zero db "A zero will be returned to the operating system.", 10, 10, 0
 
+IEEE754 db "IEEE754", 10, 0
 
 ;Fifth block
 newLine db LF, 0
@@ -72,6 +72,7 @@ name resb 50+2
 title resb 50+2
 
 myarr resq 64
+arrlength_str resb 50+2
 arrlength resq 1
 
 
@@ -149,17 +150,14 @@ call printString
 ;endblock
 
 ;get user input for how many numbers to generate
-mov rax, 0
-mov rdi, arrlength
+mov rdi, arrlength_str
 call getline
 ;endblock
 
 ;convert user input string to integer
-mov rax, 0
-mov rdi, arrlength
-call atof
-cvtsd2si r15, xmm0
-mov [arrlength], r15
+mov rdi, arrlength_str
+call atolong
+mov [arrlength], rax
 ;endblock
 
 ;print your numbers have been stored message
@@ -176,11 +174,22 @@ mov rsi, [arrlength]
 call fill_random_array
 ;endblock
 
-; ;output the array of random numbers
-; mov rdi, myarr
-; mov rsi, [arrlength]
-; call output_array
-; ;endblock
+;print IEEE754 header
+mov rax, 0
+mov rdi, IEEE754
+call printString
+;endblock
+
+;output the array of random numbers
+mov rdi, myarr
+mov rsi, [arrlength]
+call output_array
+;endblock
+
+;print newlines to keep with formatting
+mov rdi, newLine
+call printString
+;endblock
 
 ;print that the array will now be normalized
 mov rax, 0
@@ -189,21 +198,29 @@ mov rsi, STRLEN
 call printString
 ;endblock
 
+;normalize the array
+mov rax, 0
+mov rdi, myarr
+mov rsi, [arrlength]
+call normalize_array
+;endblock
 
+;print IEEE754 header
+mov rax, 0
+mov rdi, IEEE754
+call printString
+;endblock
 
+;output the array of random numbers
+mov rdi, myarr
+mov rsi, [arrlength]
+call output_array
+;endblock
 
-; ;output the array of random numbers
-; mov rdi, myarr
-; mov rsi, [arrlength]
-; call output_array
-; ;endblock
-
-
-
-
-
-
-
+;print newlines to keep with formatting
+mov rdi, newLine
+call printString
+;endblock
 
 ; print series of goodbye messages
     ;print goodbye message

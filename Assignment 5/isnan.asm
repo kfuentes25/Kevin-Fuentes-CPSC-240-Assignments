@@ -8,8 +8,8 @@
 ;of ucomisd are nans then ucomisd set 1 into flag PF and will clear flag PF to 0 if 
 ;both operands are normal numbers (not nans).
 
-global isnan
-%include "data.inc"
+global isnan0
+extern printf
 
 segment .data
    ;empty
@@ -18,7 +18,7 @@ segment .data
 segment .bss
    ;empty
 segment .text
-   isnan:
+   isnan0:
 ;Back up the GPRs (General Purpose Registers)
 push rbp
 mov rbp, rsp

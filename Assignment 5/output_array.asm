@@ -1,4 +1,6 @@
 ;*****************************************************************************************************************************                                                      *
+; Program Name: "executive.asm". This program demonstrates how to output raw binary into hexidecimal to the terminal in pure *
+;                                assembly. Copyright (C) 2025  Kevin Fuentes                                                 *
 ; This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License  *
 ; version 3 as published by the Free Software Foundation.                                                                    *
 ; This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied         *
@@ -25,35 +27,64 @@
 
 global output_array
 extern printString
-extern ftoa
 
 %include "data.inc"
 
 segment .data
-linefeed db 10, 0
-hex
-hex_prefix db "0x", 0
-space db "  ", 0
+    LF equ 10 ; line feed
+    hex_digits db "0123456789ABCDEF"
 
 segment .bss
-hex_buffer resb 17
+    temp resb 20
 
 segment .text
-
 output_array:
 backup
-
-;receive the array, its size, and create an increment counter
-mov r15, rdi
-mov r14, rsi
-xor r13, r13
-;end block
-
-begin_loop:
-; compare the increment counter and array size to see if were done
+; Moving arguments into Non-violatile registers
+mov r15, rdi ;array address
+mov r14, rsi ;array size
+mov r13, 0 ;counter
+; Check if all elements have been printed
+check_size:
 cmp r13, r14
 jge exit
-;end block
+
+output_array_loop:
+
+mov r12, [r15+r13*8]
+mov rdi, temp
+mov byte [rdi], '0'
+mov byte [rdi+1], 'x'
+
+mov rsi, rdi
+add rsi, 17
+mov rcx, 16
+
+hex_inner_loop:
+cmp rcx, 0
+jle hex_done
+
+
+; Extract the top 4 bits
+mov rdx, r12
+shr rdx, 60
+and rdx, 0xF
+; Get the corresponding hex digit
+mov al, [hex_digits + rdx]
+mov [rsi], al
+; Shift left to process the next 4 bits
+shl r12, 4
+dec rsi
+dec rcx
+jmp hex_inner_loop
+
+hex_done:
+mov byte [rdi + 18], 10
+mov byte [rdi + 19], 0
+mov rdi, temp
+call printString
+inc r13
+jmp check_size
 
 exit:
 restore

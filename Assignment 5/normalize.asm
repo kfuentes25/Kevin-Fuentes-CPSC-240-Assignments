@@ -1,4 +1,5 @@
 ;*****************************************************************************************************************************                                                      *
+; Program Name: "normalize.asm". This program demonstrates how to normalize a hexidecimal number in pure assembly. Copyright (C) 2025  Kevin Fuentes *
 ; This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License  *
 ; version 3 as published by the Free Software Foundation.                                                                    *
 ; This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied         *
@@ -26,7 +27,13 @@
 global normalize_array
 
 %include "data.inc"
+extern printString
+
 segment .data
+
+mantissa_mask dq 0xFFFFFFFFFFFFF000 ; Mask to clear exponent bits
+norm_exp_mask dq 0x0000000000000FF3    ; Normalized exponent for 1.0
+
 
 segment .bss
 
@@ -34,42 +41,41 @@ segment .text
 normalize_array:
 backup
 
-; Moving arguments into Non-violatile registers
+; put the array into normal registers
 mov r15, rdi
 mov r14, rsi
+xor r13, r13
+;endblock
 
-; Create counter for loop
-mov r13, 0
-
-; Check if numbers have been normalized
+; Check if all things have been normalized
 check_size:
 cmp r13, r14
 jge exit
+;endblock
 
-; Normalize loop if array has not been fully normalized
-normalize_loop:
+;make first 3 values of exponent to 000
+mov r11, [r15+r13*8]
+mov rax, qword [mantissa_mask]
+and r11, rax
+;endblock
 
-; Move number from array to stack to r15 to change the stored exp to 3ff.
-movsd xmm15, [r15 + r13 * 8]
-push qword 0
-movsd [rsp], xmm15
-pop r15
-shl r15, 12
-shr r15, 12
-mov rax, 0x3ff0000000000000
-or r15, rax
+; Set first 3 hex values to 3FF to normalize
+mov rax, qword [norm_exp_mask]
+or r11, rax
+;endblock
 
-push r15
-movsd xmm15, [rsp]
-pop r15
-
-; Moving Normalized value into the array
-movsd [r15+r13*8], xmm15
-  
-; Increases counter after loop ends
+; Moving the normalized value into the array
+mov [r15+r13*8], r11
 inc r13
-jmp check_size
+;endblock
 
+
+; mov rdi, debug_msg
+; call printString
+
+
+jmp check_size
+;endblock
 
 exit:
 restore
