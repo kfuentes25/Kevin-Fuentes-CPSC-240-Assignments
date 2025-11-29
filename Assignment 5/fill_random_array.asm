@@ -50,26 +50,51 @@ jge exit
 
 fill_array:
 ;generate random number with carry flag check
-rdrand rdx
-jnc fill_array
-;endblock
+; rdrand rdx
+; jnc fill_array
+; ;endblock
 
-;move random number to xmm15 for double conversion
-mov [temp], rdx
-movsd xmm0, [temp]
-;endblock
+; ;move random number to xmm15 for double conversion
+; mov [temp], rdx
+; movsd xmm0, [temp]
+; ;endblock
+
+; ;check if random number is a nan, if it is: jump to fill_array to generate a new number
+; call isnan0
+; cmp rax, 0
+; je fill_array
+; ;endblock
+
+; ;insert the random number into the array add to array r15 at position r13, increment counter, and restart loop
+; mov [r15+r13*8], rdx
+; inc r13
+; jmp capacity_check
+; ;endblock
+
+;while array is not full, generate a random number into r12, push it onto the stack then move it to xmm15 to check it
+fill_array:
+mov rax, 0
+rdrand r12
+mov rdi, r12
+push r12
+push r12
+movsd xmm15, [rsp]
+pop r12
+pop r12
 
 ;check if random number is a nan, if it is: jump to fill_array to generate a new number
+movsd xmm0, xmm15
 call isnan0
 cmp rax, 0
 je fill_array
-;endblock
 
-;insert the random number into the array add to array r15 at position r13, increment counter, and restart loop
-mov [r15+r13*8], rdx
+;if number is not a nan, move into array
+movsd [r15+r13*8], xmm15
+    
+;add to counter that a value has been added to array, then jump to check if array is still not full
 inc r13
 jmp capacity_check
-;endblock
+
 
 exit:
 restore

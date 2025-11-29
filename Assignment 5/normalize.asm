@@ -30,9 +30,8 @@ global normalize_array
 extern printString
 
 segment .data
-
-mantissa_mask dq 0xFFFFFFFFFFFFF000 ; Mask to clear exponent bits
-norm_exp_mask dq 0x0000000000000FF3    ; Normalized exponent for 1.0
+mantissa_mask dq 0x000FFFFFFFFFFFFF ; Mask to clear exponent bits
+norm_exp_mask dq 0x3FF0000000000000    ; Normalized exponent for 1.0
 
 
 segment .bss
@@ -64,16 +63,9 @@ mov rax, qword [norm_exp_mask]
 or r11, rax
 ;endblock
 
-; Moving the normalized value into the array
+; Moving the normalized value into the array and restart loop
 mov [r15+r13*8], r11
 inc r13
-;endblock
-
-
-; mov rdi, debug_msg
-; call printString
-
-
 jmp check_size
 ;endblock
 

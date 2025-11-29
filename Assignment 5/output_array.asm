@@ -57,7 +57,7 @@ mov byte [rdi], '0'
 mov byte [rdi+1], 'x'
 
 mov rsi, rdi
-add rsi, 17
+add rsi, 2
 mov rcx, 16
 
 hex_inner_loop:
@@ -74,7 +74,7 @@ mov al, [hex_digits + rdx]
 mov [rsi], al
 ; Shift left to process the next 4 bits
 shl r12, 4
-dec rsi
+inc rsi
 dec rcx
 jmp hex_inner_loop
 

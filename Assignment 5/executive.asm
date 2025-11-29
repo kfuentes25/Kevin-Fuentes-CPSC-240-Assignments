@@ -71,7 +71,7 @@ segment .bss
 name resb 50+2
 title resb 50+2
 
-myarr resq 64
+myarr resq 101
 arrlength_str resb 50+2
 arrlength resq 1
 
