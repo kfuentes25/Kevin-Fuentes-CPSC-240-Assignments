@@ -241,7 +241,6 @@ backup
     add rsi, [length_b] ; add the length of array B to the length of array A
     call display_array
 
-
     ; output the message for displaying the magnitude for array AB
     mov rax, 0
     mov rdi, magnitude_AB
@@ -264,10 +263,6 @@ backup
     mov rdi, float_format
     mov rax, 1
     call printf
-
-    ; store the magnitude in a new place for later
-    movsd 
-    ;end block
 
     ; output the message for displaying the mean for array AB
     mov rax, 0
@@ -292,6 +287,5 @@ backup
     movsd xmm0, xmm12
 
 restore
-
 ; Return
 ret

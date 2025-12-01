@@ -53,10 +53,11 @@ backup
 
 ; make sure that the register is empty
 xorpd xmm14, xmm14
+xorpd xmm13, xmm13
 
 mov r12, rdi ;r12 is the array
 mov r13, rsi ;r13 is the maximum array size (8bytes each)
-mov r15, 0 ;r15 is the loop counter
+xor r15, r15 ; clear r15 for loop counter
 jmp sum_loop ;Jumps to the marker beginloop
 
 sum_loop:
